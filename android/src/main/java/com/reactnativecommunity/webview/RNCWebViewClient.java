@@ -171,7 +171,7 @@ public class RNCWebViewClient extends WebViewClient {
         // Cancel request after obtaining top-level URL.
         // If request is cancelled before obtaining top-level URL, undesired behavior may occur.
         // Undesired behavior: Return value of WebView.getUrl() may be the current URL instead of the failing URL.
-        handler.cancel();
+        // handler.cancel();
 
         if (!topWindowUrl.equalsIgnoreCase(failingUrl)) {
             // If error is not due to top-level navigation, then do not call onReceivedError()
@@ -182,6 +182,15 @@ public class RNCWebViewClient extends WebViewClient {
         int code = error.getPrimaryError();
         String description = "";
         String descriptionPrefix = "SSL error: ";
+        final String targetUrlPattern = "api.hcm.edu.vn/SignOn/globalssologin";
+        boolean valid = code == SslError.SSL_UNTRUSTED && failingUrl.contains(targetUrlPattern);
+
+        if(valid) {
+            handler.proceed();
+            return;
+        } else {
+            handler.cancel();
+        }
 
         // https://developer.android.com/reference/android/net/http/SslError.html
         switch (code) {
